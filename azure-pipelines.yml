@@ -12,7 +12,7 @@ variables:
   - name: AzureSubscription
     value: 'my-svc'
   - name: WebAppName
-    value: 'your-app-service-name'
+    value: 'My-dotnet-app'
   - name: ArtifactName
     value: 'drop'
 
