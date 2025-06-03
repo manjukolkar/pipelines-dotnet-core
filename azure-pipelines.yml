@@ -7,19 +7,32 @@ pool:
 variables:
   - name: system.debug
     value: true
+  - name: BuildConfiguration
+    value: 'Release'
+  - name: AzureSubscription
+    value: 'my-svc'
+  - name: WebAppName
+    value: 'your-app-service-name'
+  - name: ArtifactName
+    value: 'drop'
 
 steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
-
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      publishWebProjects: true
+      projects: '**/*.csproj'
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+      zipAfterPublish: true
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Build Artifacts'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'drop'
+      ArtifactName: $(ArtifactName)
       publishLocation: 'Container'
+
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: $(AzureSubscription)
+      appName: $(WebAppName)
+      package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
